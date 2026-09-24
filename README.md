@@ -1,5 +1,10 @@
 # Market Atlas
 
+This repo holds two static sites:
+
+- **Market Atlas** (`index.html`, described below): a research breakdown of the current market.
+- **[Broad Street Exchange](simulator/README.md)** (`simulator/`): a simulated US market you can trade. It has 552 stocks, 51 ETFs, options, bonds, futures, FX, crypto and perpetuals, with margin, short selling and a macro economy that moves prices. Open `simulator/index.html`.
+
 A static website with a deep breakdown of the current market. It covers macro and rates, sectors and leaders, what the big banks and hedge funds hold (13F), the banks' published views, a history of stocks that doubled, and a **Doubling Lab** that estimates which names could double.
 
 It has no build step and no dependencies. Open `index.html` in a browser, or serve the folder:
@@ -65,6 +70,7 @@ It labels each sample 1 if the stock closed at 2× or more at any point in the n
 ```bash
 node tests/model.test.js                                  # closed forms vs 20,000-path Monte Carlo
 python3 -m unittest discover -s pipeline/tests -t .       # parsers, 13F diffing, features, ML, end-to-end build
+for f in tests/sim/*.test.js; do node "$f"; done          # Broad Street Exchange simulator
 ```
 
 ## Limitations
