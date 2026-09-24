@@ -1,5 +1,7 @@
 # Market Atlas
 
+> This repo also contains **[Hardwood Legacy](hardwood-legacy/)**, a basketball career game in the style of 2K's MyCareer. See [`hardwood-legacy/README.md`](hardwood-legacy/README.md).
+
 A static website with a deep breakdown of the current market. It covers macro and rates, sectors and leaders, what the big banks and hedge funds hold (13F), the banks' published views, a history of stocks that doubled, and a **Doubling Lab** that estimates which names could double.
 
 It has no build step and no dependencies. Open `index.html` in a browser, or serve the folder:
