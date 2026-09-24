@@ -1,5 +1,11 @@
 # Market Atlas
 
+This repository holds two static sites that share a Python data pipeline:
+
+- **Market Atlas** (`index.html`, described below): a breakdown of the current market with a doubling-probability lab.
+- **[AI Megacap Forecast](#ai-megacap-forecast)** (`ai-forecast/`): 3-month return forecasts for every AI-related stock worth $100B or more.
+
+
 A static website with a deep breakdown of the current market. It covers macro and rates, sectors and leaders, what the big banks and hedge funds hold (13F), the banks' published views, a history of stocks that doubled, and a **Doubling Lab** that estimates which names could double.
 
 It has no build step and no dependencies. Open `index.html` in a browser, or serve the folder:
@@ -73,3 +79,82 @@ python3 -m unittest discover -s pipeline/tests -t .       # parsers, 13F diffing
 - The price universe is currently-listed tickers only, so survivorship bias inflates historical doubling rates.
 - GBM assumes constant volatility and no jumps, so binary events have fatter tails than the model shows.
 - **Not investment advice.** The same volatility that makes a double possible makes a 50% drawdown likely, and the site shows both.
+
+---
+
+# AI Megacap Forecast
+
+`ai-forecast/` is a static website with a 3-month forecast for each of the **50 AI-related stocks worth $100B or more** (snapshot of Sep 24, 2026). Visitors see every forecast in one sortable table and can select any stock for its full forecast page.
+
+```bash
+cd ai-forecast && python3 -m http.server 8000   # then visit http://localhost:8000
+```
+
+Opening `ai-forecast/index.html` directly from disk also works. There is no build step and there are no dependencies.
+
+## What a visitor sees
+
+| Page | Contents |
+|---|---|
+| **All forecasts** (`#/`) | Expected 3-month return, 50% and 80% outcome ranges on a shared scale, chance of a gain and analyst upside for all 50 stocks. Search, filter by segment and sort. Also shows the average forecast by segment and the stocks just below $100B |
+| **Stock page** (`#/s/NVDA`) | Headline expected return and price, probability tiles (gain, ranges, beating the S&P 500, ±20% moves, reaching the analyst target), a fan chart of the forecast path, the drivers of the forecast, every input with its source, bear/base/bull scenarios, the thesis, catalysts and risks, and the earnings date |
+| **Method & data** (`#/method`) | The formulas, the signals with their research references, the backtest (once the pipeline has run), inclusion rules, near misses, limitations and all 175 sources |
+
+**Model settings** on every page let a visitor set the S&P 500's 3-month return (bear, base, bull or any value) and the weight on stock-specific signals. Every forecast updates immediately.
+
+## Universe
+
+The universe covers AI chips, foundry and chip equipment, memory and storage, servers and networking, clouds and model owners, AI software and security, AI power, and devices, autonomy and AI holdings. It includes Asian and European listings (TSMC, Samsung, SK Hynix, Tencent, SoftBank, Tokyo Electron, Advantest, MediaTek, Foxconn, SAP) and SpaceX (which owns xAI). Companies whose AI link is incidental, or that are mainly exposed to AI disruption, are excluded. Adobe, Vertiv, Cambricon and SMIC sit just below $100B and are listed as near misses.
+
+All company data lives in `ai-forecast/data/universe.js` with a source for every figure. That covers price, 52-week range, analyst target and rating, latest revenue growth, options-implied volatility, next earnings date, thesis, catalysts and risks. The file body is strict JSON so the Python pipeline can read it too. Figures are as reported by the cited outlets and were not re-verified against exchange data.
+
+## The forecast model (`ai-forecast/assets/forecast.js`)
+
+```
+E[R] = rf·T + β·(M − rf·T) + α          T = 63 trading days
+α    = σ_resid·√T · Σ w_k·z_k,   w = R⁻¹·IC
+ln(1+R) = ln(1+E[R]) − ½σ²T + σ√T·ε      ε ~ unit-variance Student-t(5)
+```
+
+- **Risk-free and market.** The 3-month T-bill is 4.11%. The market's 3-month return M defaults to T-bill + 5% equity premium, and each stock moves with its beta.
+- **Stock-specific tilt (α).** It comes from cross-sectional z-scores on analyst target upside, closeness to the 52-week high and revenue growth. With price history loaded, 12-1 month momentum and last-month reversal are added. Each signal has a research-based information coefficient (IC) of 0.02–0.04. Weights use the inverse of the signals' correlation matrix so overlapping signals are not double-counted. α is capped at 0.3·σ·√T.
+- **Volatility.** Sources in order: option-implied (current level blended with its 52-week norm), then measured from daily prices, then the 52-week range blended with a segment prior.
+- **Distribution.** A fat-tailed Student-t, or the empirical shape from the backtest when available, gives the percentiles, probabilities and fan chart. Reaching the analyst target uses the reflection principle.
+
+With realistic ICs the stock-specific view moves forecasts by a few percentage points. The range of outcomes (typically ±15–35% over 3 months) is the main message, and the site says so.
+
+## Measured prices and backtest (`pipeline/ai_forecast.py`)
+
+```bash
+python3 -m pipeline.ai_forecast                         # all 50 stocks + SPY
+python3 -m pipeline.ai_forecast --tickers NVDA,MU,0700.HK
+```
+
+This downloads about ten years of daily prices (Yahoo Finance, with Stooq as fallback for U.S. symbols) and writes `ai-forecast/data/generated/forecast.js`. Reload the page and it switches to measured inputs:
+
+- price, exact 52-week range, 12-1 momentum, last-month return, 63- and 252-day volatility, weekly beta vs SPY (Blume-adjusted on the site), YTD, and nine months of closes for the fan chart
+- per-stock base rates of past 3-month returns
+- a **walk-forward backtest** on month-end samples:
+  - each price signal's rank IC against the next 63-day volatility-scaled return, with overlap-adjusted t-stats
+  - the out-of-sample IC, hit rate and top-minus-bottom-fifth spread of the combined score, using only ICs known at the time
+  - the coverage of the 50% and 80% bands
+- the empirical shape of standardised 3-month returns
+
+Measured ICs are averaged 50/50 with the research priors. The committed `forecast.js` is a placeholder (`null`), so the site runs on the research snapshot until you run the pipeline.
+
+## Tests
+
+```bash
+node tests/ai_forecast.test.js                               # engine + data checks
+python3 -m unittest pipeline.tests.test_ai_forecast          # measurements, backtest, end-to-end build
+```
+
+The JS tests check the Student-t and normal functions against table values and the touch probability against Monte Carlo. They also check that the forecast decomposition adds up, quantiles are monotone and simulated outcomes match the forecast. On the data side they check the market and signal-weight settings, the switch to pipeline data, and that every stock is at least $100B with sourced, consistent figures. The Python tests cover volatility, beta, no look-ahead, calibration on random walks, detection of a planted reversal effect and an end-to-end build with a stubbed download.
+
+## Limitations
+
+- **Not investment advice.** Forecasts are model outputs under stated assumptions.
+- Snapshot prices are a mix of Sep 18–24, 2026 closes (each page shows its date). A few inputs are estimates and are flagged: CEG's price is implied from its reported 52-week distances, and Corning's is the midpoint of its Sep 23 range. Earnings dates are estimated unless marked confirmed.
+- Research ICs come from broad U.S. samples; a concentrated AI universe in a boom may behave differently.
+- Returns are in each stock's trading currency; currency moves are not modelled.
+- Measured history has survivorship bias (today's listed winners only).

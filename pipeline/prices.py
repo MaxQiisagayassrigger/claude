@@ -69,6 +69,10 @@ def fetch(symbol, years=config.YEARS_OF_HISTORY):
             return rows, "yahoo"
     except Exception as e:  # noqa: BLE001 — fall through to Stooq
         print("  yahoo failed for %s: %s" % (symbol, e), file=sys.stderr)
+    if "." in symbol:
+        # Exchange-suffixed Yahoo symbols (0700.HK, 8035.T, SAP.DE) have no
+        # matching ".us" series on Stooq.
+        raise ValueError("no fallback source for non-US symbol %s" % symbol)
     stooq_sym = symbol.lower().replace("-", ".") + ".us"
     rows = parse_stooq(net.get("https://stooq.com/q/d/l/?s=%s&i=d" % stooq_sym, ttl_hours=12, min_interval=0.5))
     cutoff = (dt.date.today() - dt.timedelta(days=int(years * 365.25))).isoformat()

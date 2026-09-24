@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Megacap Forecast</title>
+  <meta name="description" content="3-month return forecasts for every AI-related stock worth $100 billion or more: expected return, range of outcomes, probabilities, drivers and sources.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a78d6'/%3E%3Cpath d='M5 21l6-6 5 3 5-7' stroke='white' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M21 11l6-3v9z' fill='white' fill-opacity='.55'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="brand">
+        <h1><a href="#/">AI Megacap Forecast</a></h1>
+        <span class="tag">3-month outlook for every AI stock worth $100B or more</span>
+      </div>
+      <div class="header-actions">
+        <span class="pill" id="asof"></span>
+        <span class="pill" id="live"></span>
+        <button id="theme" type="button" aria-label="Toggle light or dark theme">◐ Theme</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Sections">
+    <div class="wrap" id="nav"></div>
+  </nav>
+
+  <main>
+    <div class="wrap" id="view"></div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>For research and education only. Not investment advice. Forecasts are model outputs under stated assumptions, not predictions of any specific outcome.</p>
+      <p>Company figures are as reported by the cited sources on or before the snapshot date. See <a href="#/method">Method &amp; data</a>. Companion site: <a href="../index.html">Market Atlas</a>.</p>
+    </div>
+  </footer>
+
+  <div id="tooltip"></div>
+
+  <script src="data/universe.js"></script>
+  <!-- Written by `python3 -m pipeline.ai_forecast`; the committed placeholder sets it to null. -->
+  <script src="data/generated/forecast.js" onerror="window.AI_GENERATED = null"></script>
+  <script src="assets/forecast.js"></script>
+  <script src="assets/charts.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
