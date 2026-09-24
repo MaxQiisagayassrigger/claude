@@ -197,6 +197,18 @@ class TestEndToEnd(unittest.TestCase):
             with open(os.path.join(d, "forecast.json")) as f:
                 self.assertEqual(json.load(f)["horizonDays"], 63)
 
+    def test_stops_early_when_prices_are_unreachable(self):
+        calls = []
+
+        def fetch(sym):
+            calls.append(sym)
+            raise OSError("network unreachable")
+
+        universe = af.load_universe()
+        with self.assertRaises(RuntimeError):
+            af.build(universe, fetch=fetch)
+        self.assertEqual(calls, [af.BENCHMARK])
+
     def test_main_rejects_unknown_tickers(self):
         self.assertEqual(af.main(["--tickers", "NOT_A_TICKER"]), 1)
 

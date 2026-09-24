@@ -92,6 +92,16 @@ cd ai-forecast && python3 -m http.server 8000   # then visit http://localhost:80
 
 Opening `ai-forecast/index.html` directly from disk also works. There is no build step and there are no dependencies.
 
+## Install on a Mac
+
+Run `mac/Install.command` (double-click it in Finder, or `bash mac/Install.command`). It:
+
+1. copies the site and pipeline to `~/Library/Application Support/AI Megacap Forecast/`
+2. builds **AI Megacap Forecast.app** in `/Applications` (or `~/Applications`), with its own icon, so it opens from Launchpad, Spotlight or the Dock
+3. offers to download ten years of prices right away (needs Python 3.8+)
+
+Opening the app opens the site in the default browser. If the prices are more than 12 hours old, it also refreshes them in the background and posts a notification when they're done. `mac/refresh.sh` updates prices by hand, and `mac/Uninstall.command` removes everything. The app is created on the Mac itself, so Gatekeeper doesn't block it. A downloaded `Install.command` is quarantined, so macOS asks for approval the first time (steps in `mac/Read Me First.txt`).
+
 ## What a visitor sees
 
 | Page | Contents |

@@ -393,8 +393,9 @@ def build(universe, fetch=prices.fetch):
     try:
         bench_rows, _ = fetch(BENCHMARK)
     except Exception as e:  # noqa: BLE001
-        log("  benchmark FAILED (%s); betas will be estimated on the site" % e)
-        bench_rows = None
+        # If the benchmark can't be fetched the price sources are almost
+        # certainly unreachable; stop instead of retrying every stock.
+        raise RuntimeError("couldn't download %s prices (%s). Check the internet connection and try again." % (BENCHMARK, e))
     log("Prices: %d stocks" % len(stocks))
     series, failed = fetch_all(stocks, fetch)
     if not series:
@@ -414,7 +415,7 @@ def build(universe, fetch=prices.fetch):
     all_dates = [r[0] for rows in series.values() for r in (rows[0], rows[-1])]
     return {
         "generatedAt": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
-        "benchmark": BENCHMARK if bench_rows else None,
+        "benchmark": BENCHMARK,
         "horizonDays": HORIZON,
         "priceStart": min(all_dates), "priceEnd": max(all_dates),
         "universe": len(series), "failed": failed,

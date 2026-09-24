@@ -1,0 +1,64 @@
+AI Megacap Forecast for Mac
+===========================
+
+3-month forecasts for every AI-related stock worth $100 billion or more.
+The site runs locally in your browser. Nothing is sent anywhere, and it
+needs no account.
+
+
+INSTALL
+
+1. Double-click "Install.command".
+
+   macOS may say it can't verify the developer, because the installer
+   isn't signed. To allow it:
+     - macOS 15 Sequoia or later: open System Settings > Privacy &
+       Security, scroll down, click "Open Anyway" next to
+       "Install.command", then confirm.
+     - macOS 14 Sonoma or earlier: Control-click "Install.command",
+       choose Open, then click Open again.
+   Or open Terminal, type "bash " (with a space), drag Install.command
+   into the window and press Return.
+
+2. When asked, press Return to download ten years of prices (about a
+   minute). This needs Python 3; see below.
+
+3. The forecast opens in your browser, and a Finder window shows the new
+   "AI Megacap Forecast" app. Open it any time from Launchpad or
+   Spotlight, or drag it to the Dock.
+
+
+KEEPING PRICES UP TO DATE
+
+Opening the app checks the prices. If they are more than 12 hours old it
+downloads new ones in the background and shows a notification when it's
+done. Reload the page to see the new forecasts.
+
+To update by hand, run this in Terminal:
+  "$HOME/Library/Application Support/AI Megacap Forecast/mac/refresh.sh"
+
+
+PYTHON 3
+
+Python is only needed to download prices. Without it the site still works
+with its built-in research data (prices from September 2026).
+To install it, run in Terminal:
+  xcode-select --install
+or download it from https://www.python.org/downloads/macos/
+Then open the app again.
+
+
+WHAT GETS INSTALLED
+
+  /Applications/AI Megacap Forecast.app   (or ~/Applications if
+                                           /Applications isn't writable)
+  ~/Library/Application Support/AI Megacap Forecast/   site and data
+  ~/Library/Logs/AI Megacap Forecast.log               price update log
+
+
+UNINSTALL
+
+Double-click "Uninstall.command" and answer y.
+
+
+For research and education only. Not investment advice.
