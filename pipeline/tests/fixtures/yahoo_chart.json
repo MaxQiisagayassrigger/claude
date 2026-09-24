@@ -1,0 +1,3 @@
+{"chart":{"result":[{"meta":{"symbol":"TEST"},"timestamp":[1735828200,1735914600,1736173800,1736173800],
+"indicators":{"quote":[{"close":[10.0,10.5,null,11.0],"volume":[1000,1200,900,1500]}],
+"adjclose":[{"adjclose":[9.8,10.3,null,10.9]}]}}],"error":null}}

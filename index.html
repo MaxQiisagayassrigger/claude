@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Market Atlas</title>
+  <meta name="description" content="Deep breakdown of the current market: macro, sectors, 13F institutional portfolios, bank views, a history of stocks that doubled, and a probability lab for future doubling candidates.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a78d6'/%3E%3Cpath d='M6 22l6-7 5 4 9-11' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="brand">
+        <h1>Market Atlas</h1>
+        <span class="tag">Macro, smart money and the hunt for stocks that can double</span>
+      </div>
+      <div class="header-actions">
+        <span class="pill" id="asof"></span>
+        <span class="pill" id="live"></span>
+        <button id="theme" type="button" aria-label="Toggle light or dark theme">◐ Theme</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Sections">
+    <div class="wrap" id="nav"></div>
+  </nav>
+
+  <main>
+    <div class="wrap" id="view"></div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      For research and education only. Not investment advice. Figures are as reported by the cited sources on the snapshot date.
+      Probabilities are model outputs under stated assumptions, not forecasts.
+    </div>
+  </footer>
+
+  <div id="tooltip"></div>
+
+  <script src="data/snapshot.js"></script>
+  <!-- Written by `python3 -m pipeline.build`; a missing file is fine (the site falls back to the snapshot). -->
+  <script src="data/generated/dataset.js" onerror="window.GENERATED = null"></script>
+  <script src="assets/js/model.js"></script>
+  <script src="assets/js/charts.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
